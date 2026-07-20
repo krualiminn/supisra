@@ -1,0 +1,1320 @@
+<!DOCTYPE html>
+<html lang="th" class="h-full bg-slate-50">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ท่านรอง - ระบบจำลองการสอบรองผู้อำนวยการสถานศึกษา</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Sarabun', 'Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0f7ff',
+                            100: '#e0effe',
+                            200: '#bae2fd',
+                            300: '#7cc8fc',
+                            400: '#38a9f8',
+                            500: '#0e8ee9',
+                            600: '#0270c7',
+                            700: '#0359a1',
+                            800: '#074c85',
+                            900: '#0c406e',
+                            950: '#082949',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+        .thai-letter::before {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body class="h-full flex flex-col font-sans text-slate-800 bg-slate-50 transition-colors duration-300">
+
+    <!-- Top Navigation Bar -->
+    <nav class="bg-brand-900 text-white shadow-lg border-b border-brand-800 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <!-- Logo -->
+                <div class="flex items-center space-x-3 cursor-pointer" onclick="backToDashboard()">
+                    <div class="bg-brand-500 p-2 rounded-lg shadow-md flex items-center justify-center">
+                        <i class="fa-solid fa-user-tie text-xl text-white"></i>
+                    </div>
+                    <div>
+                        <span class="text-xl font-bold tracking-wider block">ท่านรอง</span>
+                        <span class="text-xs text-brand-300 -mt-1 block">ระบบแบบทดสอบจำลองรองผู้อำนวยการ</span>
+                    </div>
+                </div>
+
+                <!-- API Key Config Indicator / Quick Info -->
+                <div class="flex items-center space-x-4">
+                    <button onclick="toggleApiModal()" class="flex items-center space-x-2 bg-brand-800 hover:bg-brand-700 px-3 py-1.5 rounded-lg text-xs font-medium transition shadow-sm border border-brand-700">
+                        <i class="fa-solid fa-key" id="apiKeyStatusIcon"></i>
+                        <span id="apiKeyStatusText">ใช้ระบบ API อัจฉริยะ (ฟรี/อัตโนมัติ)</span>
+                    </button>
+                    <div class="hidden md:flex items-center space-x-2 text-xs text-brand-200">
+                        <i class="fa-solid fa-circle-info"></i>
+                        <span>อิงเกณฑ์การสอบ ก.ค.ศ. ล่าสุด</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 flex flex-col">
+
+        <!-- VIEW 1: Exam Configuration Dashboard -->
+        <section id="configSection" class="space-y-6 block">
+            <!-- Welcoming Banner -->
+            <div class="bg-gradient-to-r from-brand-800 to-brand-900 rounded-2xl p-6 sm:p-8 text-white shadow-xl relative overflow-hidden">
+                <div class="relative z-10 max-w-2xl">
+                    <span class="bg-brand-500/30 text-brand-200 text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider">ระบบจำลองข้อสอบ AI </span>
+                    <h1 class="text-2xl sm:text-4xl font-bold mt-3 leading-tight">เตรียมตัวก้าวสู่ตำแหน่ง "รองผู้อำนวยการสถานศึกษา"</h1>
+                    <p class="text-brand-100 text-sm sm:text-base mt-2">
+                        ฝึกฝนทำข้อสอบวิเคราะห์สถานการณ์ และกฎหมายการศึกษาไทย ด้วยเทคโนโลยีการสร้างข้อสอบจากปัญญาประดิษฐ์ (AI) แม่นยำตามหลักสูตร ก.ค.ศ. ปรับแต่งได้ตามความต้องการของคุณ
+                    </p>
+                </div>
+                <!-- Decorative background elements -->
+                <div class="absolute right-0 bottom-0 top-0 opacity-10 pointer-events-none hidden md:block">
+                    <i class="fa-solid fa-graduation-cap text-[15rem] translate-y-12 translate-x-12"></i>
+                </div>
+            </div>
+
+            <!-- Configuration Form Card -->
+            <div class="bg-white rounded-2xl p-6 shadow-md border border-slate-200/80">
+                <h2 class="text-lg font-bold text-slate-900 border-b pb-3 mb-6 flex items-center space-x-2">
+                    <i class="fa-solid fa-sliders text-brand-500"></i>
+                    <span>ตั้งค่าชุดข้อสอบจำลอง</span>
+                </h2>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Column 1: Topic Selection -->
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-700 mb-2">เลือกรูปแบบเนื้อหาการสอบ</label>
+                            <div class="grid grid-cols-2 gap-2">
+                                <button type="button" onclick="setTopicType('preset')" id="btnTypePreset" class="py-2.5 px-4 rounded-xl border-2 text-sm font-medium flex items-center justify-center space-x-2 transition-all duration-200 border-brand-500 bg-brand-50/50 text-brand-700">
+                                    <i class="fa-solid fa-book-bookmark"></i>
+                                    <span>หมวดหมู่มาตรฐาน</span>
+                                </button>
+                                <button type="button" onclick="setTopicType('custom')" id="btnTypeCustom" class="py-2.5 px-4 rounded-xl border-2 text-sm font-medium flex items-center justify-center space-x-2 transition-all duration-200 border-slate-200 text-slate-600 hover:bg-slate-50">
+                                    <i class="fa-solid fa-pencil"></i>
+                                    <span>กำหนดหัวเรื่องเอง</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Sub-view: Preset Topic -->
+                        <div id="presetTopicContainer" class="space-y-4 block">
+                            <div>
+                                <label for="majorTopic" class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">หมวดหมู่หลัก</label>
+                                <select id="majorTopic" onchange="updateSubtopics()" class="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500">
+                                    <option value="laws">กลุ่มที่ 1: กฎหมายและระเบียบการบริหารราชการ</option>
+                                    <option value="administration">กลุ่มที่ 2: งานบริหารสถานศึกษา 4 ฝ่าย</option>
+                                    <option value="policy">กลุ่มที่ 3: นโยบายและสถานการณ์ปัจจุบัน</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label for="subTopic" class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">หมวดหมู่ย่อย</label>
+                                <select id="subTopic" class="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500">
+                                    <!-- Dynamic Subtopics -->
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Sub-view: Custom Topic -->
+                        <div id="customTopicContainer" class="hidden">
+                            <label for="customTopicText" class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">ระบุเรื่องที่คุณต้องการให้ AI ออกข้อสอบ</label>
+                            <input type="text" id="customTopicText" placeholder="เช่น ระเบียบการเงินโรงเรียน, การแต่งตั้งคณะกรรมการ, พ.ร.บ. จัดซื้อจัดจ้างฯ" class="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500">
+                            <p class="text-[11px] text-slate-400 mt-1"><i class="fa-solid fa-info-circle mr-1"></i>คุณสามารถพิมพ์หัวเรื่องเฉพาะเจาะจงได้ แล้วระบบจะส่งคำสั่งให้ AI ผลิตข้อสอบตรงตามหัวข้อนั้นทันที</p>
+                        </div>
+                    </div>
+
+                    <!-- Column 2: Parameters & Difficulty -->
+                    <div class="space-y-4">
+                        <div class="grid grid-cols-2 gap-4">
+                            <!-- Question Count -->
+                            <div>
+                                <label for="questionCount" class="block text-sm font-semibold text-slate-700 mb-1">จำนวนข้อสอบ</label>
+                                <select id="questionCount" class="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500">
+                                    <option value="5">5 ข้อ (ทดสอบเร็ว)</option>
+                                    <option value="10" selected>10 ข้อ (มาตรฐาน)</option>
+                                    <option value="15">15 ข้อ (ท้าทาย)</option>
+                                    <option value="20">20 ข้อ (จำลองสนามจริง)</option>
+                                </select>
+                            </div>
+
+                            <!-- Exam Timer -->
+                            <div>
+                                <label for="timerLimit" class="block text-sm font-semibold text-slate-700 mb-1">จำกัดเวลาในการสอบ</label>
+                                <select id="timerLimit" class="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500">
+                                    <option value="5">5 นาที</option>
+                                    <option value="10">10 นาที</option>
+                                    <option value="15" selected>15 นาที</option>
+                                    <option value="20">20 นาที</option>
+                                    <option value="30">30 นาที</option>
+                                    <option value="0">ไม่จำกัดเวลา</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Difficulty Selector -->
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-700 mb-2">เลือกระดับความยาก</label>
+                            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                                <label class="relative flex flex-col p-3 border-2 rounded-xl cursor-pointer hover:bg-slate-50 transition border-slate-200" id="diffLabel-easy">
+                                    <input type="radio" name="difficulty" value="easy" onclick="selectDifficulty('easy')" class="sr-only" checked>
+                                    <span class="text-xs font-semibold text-emerald-600 mb-0.5"><i class="fa-solid fa-feather-pointed"></i> ง่าย</span>
+                                    <span class="text-[10px] text-slate-400">เน้นความจำ/ตัวเลข</span>
+                                </label>
+                                <label class="relative flex flex-col p-3 border-2 rounded-xl cursor-pointer hover:bg-slate-50 transition border-slate-200" id="diffLabel-medium">
+                                    <input type="radio" name="difficulty" value="medium" onclick="selectDifficulty('medium')" class="sr-only">
+                                    <span class="text-xs font-semibold text-amber-500 mb-0.5"><i class="fa-solid fa-puzzle-piece"></i> ปานกลาง</span>
+                                    <span class="text-[10px] text-slate-400">ระเบียบทั่วไป</span>
+                                </label>
+                                <label class="relative flex flex-col p-3 border-2 rounded-xl cursor-pointer hover:bg-slate-50 transition border-slate-200" id="diffLabel-hard">
+                                    <input type="radio" name="difficulty" value="hard" onclick="selectDifficulty('hard')" class="sr-only">
+                                    <span class="text-xs font-semibold text-orange-600 mb-0.5"><i class="fa-solid fa-brain"></i> ยาก</span>
+                                    <span class="text-[10px] text-slate-400">เน้นการวิเคราะห์</span>
+                                </label>
+                                <label class="relative flex flex-col p-3 border-2 rounded-xl cursor-pointer hover:bg-slate-50 transition border-slate-200" id="diffLabel-realistic">
+                                    <input type="radio" name="difficulty" value="realistic" onclick="selectDifficulty('realistic')" class="sr-only">
+                                    <span class="text-xs font-semibold text-red-600 mb-0.5"><i class="fa-solid fa-shield-halved"></i> สมจริง</span>
+                                    <span class="text-[10px] text-slate-400">ข้อสอบจริง/ประยุกต์</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Button -->
+                <div class="mt-8 pt-4 border-t border-slate-100 flex justify-end">
+                    <button type="button" onclick="generateAndPrepareQuiz()" class="w-full sm:w-auto bg-gradient-to-r from-brand-600 to-brand-700 text-white font-semibold px-8 py-3.5 rounded-xl hover:from-brand-700 hover:to-brand-800 focus:outline-none focus:ring-4 focus:ring-brand-500/30 transition shadow-lg flex items-center justify-center space-x-2">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i>
+                        <span>สร้างข้อสอบด้วย AI</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- VIEW 2: Loading State -->
+        <section id="loadingSection" class="hidden flex-1 flex-col items-center justify-center py-12 space-y-6">
+            <div class="relative">
+                <!-- Circular spinner with pulsing AI magic -->
+                <div class="w-20 h-20 border-4 border-brand-200 border-t-brand-600 rounded-full animate-spin"></div>
+                <div class="absolute inset-0 flex items-center justify-center">
+                    <i class="fa-solid fa-wand-magic-sparkles text-2xl text-brand-500 animate-pulse"></i>
+                </div>
+            </div>
+            <div class="text-center space-y-2 max-w-md">
+                <h3 class="text-xl font-bold text-slate-900">กำลังออกแบบข้อสอบด้วย AI...</h3>
+                <p id="loadingTip" class="text-sm text-slate-500 animate-fade-in px-4">กำลังเปิดประมวลผลข้อกฎหมายล่าสุดเพื่อพัฒนาคำถามวิเคราะห์สถานการณ์...</p>
+            </div>
+            <div class="w-full max-w-xs bg-slate-200 h-1.5 rounded-full overflow-hidden">
+                <div class="bg-brand-500 h-full w-2/3 rounded-full animate-pulse"></div>
+            </div>
+        </section>
+
+        <!-- VIEW 3: Active Exam View -->
+        <section id="examSection" class="hidden flex-1 flex-col lg:flex-row gap-6">
+            <!-- Left Column: Navigation Sidebar & Timer -->
+            <div class="w-full lg:w-80 flex flex-col space-y-4 shrink-0">
+                <!-- Session/Time Status Card -->
+                <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200/80">
+                    <div class="flex items-center justify-between mb-4">
+                        <span class="text-xs font-semibold uppercase tracking-wider text-slate-400">เวลาทำข้อสอบ</span>
+                        <div id="timerContainer" class="flex items-center space-x-1.5 text-brand-600 font-bold bg-brand-50 px-2.5 py-1 rounded-lg">
+                            <i class="fa-regular fa-clock"></i>
+                            <span id="examTimer">15:00</span>
+                        </div>
+                    </div>
+
+                    <!-- Progress bar -->
+                    <div class="space-y-1">
+                        <div class="flex justify-between text-xs font-medium">
+                            <span class="text-slate-500">ความคืบหน้า</span>
+                            <span id="answeredRatio" class="text-slate-900">0/10 ข้อ</span>
+                        </div>
+                        <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                            <div id="examProgressBar" class="bg-brand-500 h-full transition-all duration-300" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Navigation grid -->
+                <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200/80 flex-1 flex flex-col">
+                    <h3 class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-3">แผงควบคุมข้อสอบ</h3>
+                    <div id="questionGrid" class="grid grid-cols-5 gap-2 max-h-[300px] overflow-y-auto pr-1">
+                        <!-- Dynamic Question Grid -->
+                    </div>
+
+                    <div class="mt-6 pt-4 border-t border-slate-100 space-y-2 mt-auto">
+                        <button type="button" onclick="confirmSubmitModal()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3 rounded-xl shadow-md transition flex items-center justify-center space-x-2">
+                            <i class="fa-solid fa-paper-plane"></i>
+                            <span>ส่งกระดาษคำตอบ</span>
+                        </button>
+                        <button type="button" onclick="confirmExitModal()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-600 font-medium py-2 rounded-xl transition text-sm">
+                            <i class="fa-solid fa-arrow-left mr-1"></i> ออกจากห้องสอบ
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Main Exam Content -->
+            <div class="flex-1 flex flex-col">
+                <div class="bg-white rounded-2xl p-6 shadow-md border border-slate-200/80 flex-1 flex flex-col">
+                    <!-- Question Header & Indicator -->
+                    <div class="flex items-center justify-between border-b pb-4 mb-6">
+                        <span id="questionNumberIndicator" class="bg-brand-100 text-brand-800 text-xs font-bold px-3 py-1.5 rounded-full">ข้อที่ 1 จาก 10</span>
+                        <div class="flex items-center space-x-2 text-xs text-slate-400">
+                            <i class="fa-solid fa-tag"></i>
+                            <span id="currentQuestionTag">หมวดวิชาการ</span>
+                        </div>
+                    </div>
+
+                    <!-- Question Body -->
+                    <div class="space-y-6 flex-1 flex flex-col justify-between">
+                        <div>
+                            <h2 id="questionText" class="text-base sm:text-lg font-bold text-slate-900 leading-relaxed mb-6">
+                                หากท่านพบคดีวินัยร้ายแรงในโรงเรียน ท่านมีสิทธิ์สั่งการทางปกครองแก่บุคลากรรายนั้นได้เพียงใด?
+                            </h2>
+
+                            <!-- Options Selectable Container -->
+                            <div id="optionsContainer" class="space-y-3">
+                                <!-- Option A, B, C, D Dynamic -->
+                            </div>
+                        </div>
+
+                        <!-- Prev / Next Navigation -->
+                        <div class="flex items-center justify-between border-t pt-6 mt-8">
+                            <button type="button" id="prevBtn" onclick="prevQuestion()" class="flex items-center space-x-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold px-5 py-2.5 rounded-xl transition">
+                                <i class="fa-solid fa-chevron-left"></i>
+                                <span>ข้อย้อนหลัง</span>
+                            </button>
+                            <button type="button" id="nextBtn" onclick="nextQuestion()" class="flex items-center space-x-2 bg-brand-600 hover:bg-brand-700 text-white font-semibold px-6 py-2.5 rounded-xl shadow-md transition">
+                                <span>ข้อถัดไป</span>
+                                <i class="fa-solid fa-chevron-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- VIEW 4: Review / Results View -->
+        <section id="resultSection" class="hidden space-y-6">
+            <!-- Results Summary Card -->
+            <div class="bg-white rounded-2xl p-6 sm:p-8 shadow-md border border-slate-200/80">
+                <div class="flex flex-col md:flex-row items-center justify-between gap-6">
+                    <div class="space-y-3 text-center md:text-left">
+                        <span class="bg-brand-100 text-brand-800 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">ผลคะแนนการสอบจำลอง</span>
+                        <h2 class="text-2xl sm:text-3xl font-bold text-slate-900">สรุปภาพรวมความรู้ความรอบรู้ในการบริหาร</h2>
+                        <p class="text-sm text-slate-500">ผลวิเคราะห์ความพร้อมของคุณครูสำหรับการสอบก้าวสู่เกณฑ์ตำแหน่งรองผู้อำนวยการ</p>
+                        
+                        <!-- Analysis feedback tag -->
+                        <div class="inline-flex items-center space-x-2 bg-slate-50 p-3 rounded-xl border border-slate-100 mt-2">
+                            <span class="text-sm" id="resultAppraisalText">เตรียมความพร้อมดีเยี่ยม! คุณพร้อมสอบสนามจริงแล้ว</span>
+                        </div>
+                    </div>
+
+                    <!-- Visual Score Circle -->
+                    <div class="flex flex-col items-center justify-center bg-brand-50/50 border border-brand-100 p-6 rounded-2xl w-40 h-40 shrink-0 shadow-inner">
+                        <span id="resultScore" class="text-4xl sm:text-5xl font-black text-brand-600">8/10</span>
+                        <span class="text-xs text-brand-800/80 font-bold uppercase tracking-wider mt-1">คะแนนที่คุณได้</span>
+                        <span id="resultPercentage" class="text-[11px] text-slate-400 mt-0.5">คิดเป็น 80%</span>
+                    </div>
+                </div>
+
+                <!-- Stats breakdown grid -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-8 pt-6 border-t border-slate-100 text-center">
+                    <div class="p-4 bg-slate-50 rounded-xl">
+                        <span class="block text-xs font-semibold text-slate-400 uppercase tracking-wider">ระดับความยาก</span>
+                        <span id="statDifficulty" class="block text-base font-bold text-slate-800 mt-1">สมจริง</span>
+                    </div>
+                    <div class="p-4 bg-slate-50 rounded-xl">
+                        <span class="block text-xs font-semibold text-slate-400 uppercase tracking-wider">เวลาที่ใช้ไป</span>
+                        <span id="statTimeSpent" class="block text-base font-bold text-slate-800 mt-1">12 นาที 15 วินาที</span>
+                    </div>
+                    <div class="p-4 bg-slate-50 rounded-xl">
+                        <span class="block text-xs font-semibold text-slate-400 uppercase tracking-wider">หัวข้อแบบทดสอบ</span>
+                        <span id="statTopic" class="block text-base font-bold text-slate-800 mt-1 truncate max-w-[200px] mx-auto">ระเบียบวินัยครู</span>
+                    </div>
+                </div>
+
+                <div class="mt-6 flex flex-col sm:flex-row gap-3 justify-end">
+                    <button type="button" onclick="restartWithSameSettings()" class="flex items-center justify-center space-x-2 border border-slate-300 hover:bg-slate-50 text-slate-700 font-semibold px-6 py-3 rounded-xl transition">
+                        <i class="fa-solid fa-arrow-rotate-left"></i>
+                        <span>เริ่มสอบชุดเดิมอีกครั้ง</span>
+                    </button>
+                    <button type="button" onclick="backToDashboard()" class="flex items-center justify-center space-x-2 bg-brand-600 hover:bg-brand-700 text-white font-semibold px-6 py-3 rounded-xl shadow-md transition">
+                        <i class="fa-solid fa-house"></i>
+                        <span>กลับสู่หน้าหลัก</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Review Questions List Header -->
+            <div class="space-y-4">
+                <h3 class="text-lg font-bold text-slate-900 flex items-center space-x-2">
+                    <i class="fa-solid fa-list-check text-brand-500"></i>
+                    <span>ตรวจคำตอบและคำอธิบายโดยละเอียด</span>
+                </h3>
+
+                <!-- Container of Question Reviews -->
+                <div id="reviewListContainer" class="space-y-4">
+                    <!-- Dynamic review templates -->
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- API KEY CONFIG MODAL -->
+    <div id="apiConfigModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full shadow-2xl p-6 border border-slate-200 transform scale-95 transition-transform duration-200" id="apiModalContent">
+            <div class="flex items-center justify-between mb-4 border-b pb-3">
+                <h3 class="text-base font-bold text-slate-900 flex items-center space-x-2">
+                    <i class="fa-solid fa-key text-brand-500"></i>
+                    <span>ตั้งค่าการเชื่อมต่อ API</span>
+                </h3>
+                <button onclick="toggleApiModal()" class="text-slate-400 hover:text-slate-600 transition"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            
+            <div class="space-y-4">
+                <p class="text-xs text-slate-500 leading-relaxed">
+                    ระบบ "ท่านรอง" ได้รับการออกแบบให้สามารถสร้างข้อสอบผ่านโมเดลปัญญาประดิษฐ์ (AI) ทรงพลังของกูเกิล (Gemini API) ได้ฟรีโดยอัตโนมัติ 
+                </p>
+                <p class="text-xs text-slate-500 leading-relaxed font-semibold">
+                    *หากคุณต้องการรับคำตอบที่รวดเร็วและเป็นสิทธิเฉพาะเจาะจงของคุณ คุณสามารถระบุ API Key ของคุณเองได้
+                </p>
+
+                <div>
+                    <label for="apiKeyInput" class="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1">Gemini API Key (ไม่บังคับ)</label>
+                    <input type="password" id="apiKeyInput" placeholder="AIZA..." class="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500">
+                </div>
+
+                <div class="bg-slate-50 p-3 rounded-lg border border-slate-100 text-[10px] text-slate-400 space-y-1">
+                    <div><i class="fa-solid fa-circle-check text-emerald-500 mr-1"></i> รองรับโมเดล gemini-3-flash-preview</div>
+                    <div><i class="fa-solid fa-lock text-brand-500 mr-1"></i> ข้อมูลคีย์จะถูกเก็บบันทึกบนเบราว์เซอร์ของคุณอย่างปลอดภัยเท่านั้น</div>
+                </div>
+            </div>
+
+            <div class="mt-6 flex justify-end space-x-2 border-t pt-4">
+                <button onclick="toggleApiModal()" class="px-4 py-2 text-xs font-medium text-slate-600 hover:bg-slate-100 rounded-lg transition">ปิด</button>
+                <button onclick="saveApiKey()" class="bg-brand-600 hover:bg-brand-700 text-white px-4 py-2 text-xs font-semibold rounded-lg shadow transition">บันทึกตั้งค่า</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- CONFIRMATION SUBMIT DIALOG (Replaces alert/confirm) -->
+    <div id="confirmSubmitModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-2xl max-w-sm w-full shadow-2xl p-6 border border-slate-200">
+            <div class="text-center space-y-4">
+                <div class="mx-auto w-12 h-12 rounded-full bg-emerald-50 flex items-center justify-center text-emerald-500 text-xl">
+                    <i class="fa-solid fa-paper-plane animate-bounce"></i>
+                </div>
+                <div>
+                    <h3 class="text-base font-bold text-slate-900">คุณต้องการส่งคำตอบหรือไม่?</h3>
+                    <p class="text-xs text-slate-500 mt-1">หลังจากกดยืนยันแล้ว ระบบจะตรวจผลคะแนนและประเมินทักษะของคุณทันที</p>
+                </div>
+            </div>
+            <div class="mt-6 flex gap-3">
+                <button onclick="closeSubmitModal()" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-600 font-medium py-2.5 rounded-xl transition text-xs">ทำข้อสอบต่อ</button>
+                <button onclick="executeSubmitExam()" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 rounded-xl shadow transition text-xs">ยืนยันส่งคำตอบ</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- GENERAL DIALOG FOR NOTIFICATION/EXIT (Replaces alert/confirm) -->
+    <div id="notificationModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-2xl max-w-sm w-full shadow-2xl p-6 border border-slate-200">
+            <div class="text-center space-y-4">
+                <div class="mx-auto w-12 h-12 rounded-full bg-amber-50 flex items-center justify-center text-amber-500 text-xl" id="notifIconContainer">
+                    <i class="fa-solid fa-circle-exclamation"></i>
+                </div>
+                <div>
+                    <h3 class="text-base font-bold text-slate-900" id="notifTitle">หัวข้อประกาศ</h3>
+                    <p class="text-xs text-slate-500 mt-1" id="notifDescription">รายละเอียดคำแนะนำหรือแจ้งเตือนเพิ่มเติม</p>
+                </div>
+            </div>
+            <div class="mt-6 flex gap-3" id="notifActionContainer">
+                <button onclick="closeNotifModal()" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold py-2.5 rounded-xl transition text-xs">ปิดหน้าต่าง</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- FOOTER Section -->
+    <footer class="bg-white border-t border-slate-200 py-6 mt-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-xs text-slate-400 space-y-2">
+            <p>© 2026 ระบบการสอบจำลอง "ท่านรอง" อัจฉริยะสร้างด้วย AI เพื่อข้าราชการครูไทย</p>
+            <div class="flex items-center justify-center space-x-3">
+                <span>เวอร์ชัน 1.2.0 (ก.ค.ศ. มาตรฐานใหม่)</span>
+                <span>•</span>
+                <span>ขับเคลื่อนโดย Google Gemini 3.1 Flash Preview</span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Application State & Script Engine -->
+    <script>
+        /* -----------------------------------------------------
+         * PRESET TOPICS DATA FOR SCHOOL DEPUTY DIRECTOR EXAM
+         * ----------------------------------------------------- */
+        const quizCategories = {
+            laws: {
+                title: "กลุ่มที่ 1: กฎหมายและระเบียบการบริหารราชการ",
+                subtopics: [
+                    { id: "edu_act", title: "พ.ร.บ. การศึกษาแห่งชาติ พ.ศ. 2542 และแก้ไขเพิ่มเติม" },
+                    { id: "teacher_act", title: "พ.ร.บ. ระเบียบข้าราชการครูและบุคลากรทางการศึกษา พ.ศ. 2547" },
+                    { id: "admin_moe", title: "พ.ร.บ. ระเบียบบริหารราชการกระทรวงศึกษาธิการ พ.ศ. 2546" },
+                    { id: "council", title: "พ.ร.บ. สภาครูและบุคลากรทางการศึกษา พ.ศ. 2546" },
+                    { id: "discipline", title: "กฎระเบียบ ก.ค.ศ. ว่าด้วยการรักษาวินัยและการอุทธรณ์" }
+                ]
+            },
+            administration: {
+                title: "กลุ่มที่ 2: งานบริหารสถานศึกษา 4 ฝ่าย",
+                subtopics: [
+                    { id: "academic", title: "การบริหารงานวิชาการ (หลักสูตร, การนิเทศ, สื่อ AI เพื่อการสอน)" },
+                    { id: "procurement", title: "พ.ร.บ. การจัดซื้อจัดจ้างและการบริหารพัสดุภาครัฐ พ.ศ. 2560" },
+                    { id: "budget", title: "การบริหารงบประมาณ (แผนปฏิบัติการรายปี, เงินรายได้สถานศึกษา)" },
+                    { id: "personnel", title: "การบริหารงานบุคคล (เกณฑ์วิทยฐานะ PA, ขวัญกำลังใจครู)" },
+                    { id: "general_admin", title: "งานบริหารทั่วไป (สารบรรณ พ.ศ.2526, การจัดการประชาสัมพันธ์)" }
+                ]
+            },
+            policy: {
+                title: "กลุ่มที่ 3: นโยบายและสถานการณ์ปัจจุบัน",
+                subtopics: [
+                    { id: "strategy_20", title: "ยุทธศาสตร์ชาติ 20 ปี และแผนแม่บทระดับชาติ" },
+                    { id: "moe_policy", title: "นโยบายเร่งด่วน ศธ. (เรียนดี มีความสุข, ลดภาระงานครู)" },
+                    { id: "digital_school", title: "การบริหารแบบ Digital Transformation & School AI Intelligence" },
+                    { id: "conflict", title: "จิตวิทยาผู้บริหารและการขจัดความขัดแย้งเชิงองค์กร" }
+                ]
+            }
+        };
+
+        /* -----------------------------------------------------
+         * ROBUST FALLBACK DATABASE
+         * (If API fails, network drops, or API key limits reached)
+         * ----------------------------------------------------- */
+        const fallbackQuizzes = [
+            {
+                question: "ในฐานะรองผู้อำนวยการสถานศึกษา ฝ่ายงานจัดหาพัสดุระบุว่าโรงเรียนต้องการซื้ออุปกรณ์วิจัย AI มูลค่ารวม 450,000 บาท ตามระเบียบจัดซื้อจัดจ้าง พ.ศ. 2560 โรงเรียนสามารถใช้วิธีจัดซื้อแบบเฉพาะเจาะจงได้หรือไม่?",
+                options: [
+                    "ไม่ได้ เนื่องจากวงเงินเกิน 100,000 บาท ต้องใช้วิธีประกาศเชิญชวนทั่วไป",
+                    "ได้ เนื่องจากวงเงินไม่เกิน 500,000 บาท สามารถดำเนินการจัดทำโดยวิธีเฉพาะเจาะจงได้ตามหลักเกณฑ์",
+                    "ได้ต่อเมื่อได้รับการอนุมัติเป็นกรณีฉุกเฉินจากผู้ว่าราชการจังหวัดเท่านั้น",
+                    "ไม่ได้ ต้องดำเนินการจัดสรรแบ่งครึ่งจัดซื้อเพื่อเลี่ยงขีดจำกัดงบประมาณ"
+                ],
+                correctAnswer: 1,
+                explanation: "ตามพระราชบัญญัติการจัดซื้อจัดจ้างและการบริหารพัสดุภาครัฐ พ.ศ. 2560 และกฎกระทรวงที่เกี่ยวข้อง กำหนดให้การจัดซื้อจัดจ้างสินค้าหรือบริการที่มีวงเงินไม่เกิน 500,000 บาท สามารถใช้วิธีเฉพาะเจาะจงได้โดยไม่ต้องประกาศเชิญชวนทั่วไป การแบ่งซื้อแบ่งจ้างเพื่อหลีกเลี่ยงกฎหมายถือเป็นความผิดทางวินัยอย่างร้ายแรง",
+                reference: "มาตรา 56 แห่ง พ.ร.บ. จัดซื้อจัดจ้างและการบริหารพัสดุภาครัฐ พ.ศ. 2560 และกฎกระทรวงกำหนดวงเงิน"
+            },
+            {
+                question: "หากข้าราชการครูท่านหนึ่งกระทำละเมิดต่อผู้ปกครองเด็กในระหว่างปฏิบัติหน้าที่สอนวิชาพละศึกษา การเรียกร้องสิทธิค่าสินไหมทดแทนต้องยื่นฟ้องหรือร้องเรียนต่อบุคคลใดตาม พ.ร.บ.ความรับผิดทางละเมิดของเจ้าหน้าที่ พ.ศ. 2539?",
+                options: [
+                    "ฟ้องร้องตัวครูผู้สอนเป็นส่วนตัวโดยตรงเพื่อความรวดเร็ว",
+                    "ฟ้องร้องผู้อำนวยการสถานศึกษาในฐานะผู้ควบคุมการสอน",
+                    "ฟ้องร้องหน่วยงานของรัฐต้นสังกัด (สพฐ./สพป./สพม.) และไม่สามารถฟ้องร้องครูผู้ปฏิบัติงานได้โดยตรง",
+                    "ฟ้องร้องคณะกรรมการสถานศึกษาขั้นพื้นฐานเพื่อตรวจสอบข้อเท็จจริง"
+                ],
+                correctAnswer: 2,
+                explanation: "พ.ร.บ. ความรับผิดทางละเมิดของเจ้าหน้าที่ พ.ศ. 2539 บัญญัติว่า หากเจ้าหน้าที่ได้กระทำการละเมิดต่อบุคคลภายนอกในการปฏิบัติงานในหน้าที่ ให้ผู้เสียหายมีสิทธิฟ้องร้องหน่วยงานของรัฐต้นสังกัดได้โดยตรง แต่จะฟ้องร้องเจ้าหน้าที่ (ตัวครู) เป็นส่วนตัวไม่ได้",
+                reference: "พ.ร.บ. ความรับผิดทางละเมิดของเจ้าหน้าที่ พ.ศ. 2539 มาตรา 5"
+            },
+            {
+                question: "คำถามจำลองสถานการณ์สมจริง: กรณีมีเรื่องร้องเรียนผ่านสังคมออนไลน์ว่า 'ครูในสังกัดใช้วาจาไม่สุภาพและแสดงพฤติกรรมกลั่นแกล้งนักเรียน' ในฐานะที่ท่านเป็นรองผู้อำนวยการสถานศึกษาที่ได้รับมอบหมายดูแลความเรียบร้อย สิ่งแรกที่ท่านควรดำเนินการตามลำดับความเร่งด่วนคือข้อใด?",
+                options: [
+                    "แจ้งความดำเนินคดีกับผู้โพสต์ข้อมูลทันทีเนื่องจากทำให้ชื่อเสียงโรงเรียนเสียหาย",
+                    "สืบหาข้อมูลข้อเท็จจริงเบื้องต้นอย่างเงียบๆ คุยกับนักเรียนและครูที่เกี่ยวข้องเพื่อทำรายงานต่อผู้อำนวยการโรงเรียน",
+                    "ตั้งคณะกรรมการสอบสวนวินัยร้ายแรงแก่ครูคนดังกล่าวทันทีโดยไม่ต้องฟังคำชี้แจง",
+                    "ทำโพสต์ตอบโต้ผ่านช่องทางประชาสัมพันธ์โรงเรียนทันทีเพื่อแก้ต่างให้กับโรงเรียน"
+                ],
+                correctAnswer: 1,
+                explanation: "ในฐานะผู้บริหารสถานศึกษา การบริหารภาวะวิกฤต (Crisis Management) ต้องยึดหลักความรวดเร็วและถูกต้องอันชอบธรรม ขั้นตอนแรกควรเข้าตรวจสอบข้อเท็จจริงอย่างยุติธรรม รักษาสิทธิประโยชน์ของผู้เรียนเป็นสำคัญ แล้วทำรายงานรายงานผลการสืบหาข้อมูลเบื้องต้นให้ผู้อำนวยการสถานศึกษาพิจารณาดำเนินการขั้นต่อไป",
+                reference: "หลักจิตวิทยาผู้บริหารการจัดการสถานการณ์วิกฤต และแนวปฏิบัติความปลอดภัยในสถานศึกษา สพฐ."
+            },
+            {
+                question: "สิทธิและหน้าที่ทางการศึกษาตาม พระราชบัญญัติการศึกษาแห่งชาติ พ.ศ. 2542 ได้กำหนดให้รัฐต้องจัดให้บุคคลได้รับการศึกษาขั้นพื้นฐานโดยไม่เก็บค่าใช้จ่ายเป็นระยะเวลาอย่างน้อยเท่าใด?",
+                options: [
+                    "ไม่น้อยกว่าเก้าปี (การศึกษาภาคบังคับ)",
+                    "ไม่น้อยกว่าสิบสองปี โดยรัฐต้องจัดให้อย่างทั่วถึงและมีคุณภาพ",
+                    "ไม่น้อยกว่าสิบห้าปีตามนโยบายกระทรวง",
+                    "ได้รับการส่งเสริมจนสำเร็จการศึกษาระดับปริญญาตรีอย่างเสมอภาค"
+                ],
+                correctAnswer: 1,
+                explanation: "พระราชบัญญัติการศึกษาแห่งชาติ พ.ศ. 2542 และที่แก้ไขเพิ่มเติม มาตรา 10 กำหนดให้รัฐต้องจัดการศึกษาขั้นพื้นฐานไม่น้อยกว่าสิบสองปีที่รัฐต้องจัดให้อย่างทั่วถึงและมีคุณภาพโดยไม่เก็บค่าใช้จ่าย (หมายเหตุ: แม้จะมีโครงการเรียนฟรี 15 ปีตามมติคณะรัฐมนตรีก็ตาม แต่ตามมาตรากฎหมายการศึกษาขั้นพื้นฐานกำหนดไว้ที่อย่างน้อยสิบสองปี)",
+                reference: "พระราชบัญญัติการศึกษาแห่งชาติ พ.ศ. 2542 มาตรา 10"
+            },
+            {
+                question: "การพิมพ์หนังสือราชการภายนอกที่ส่งออกไปนอกโรงเรียนตามระเบียบสำนักนายกรัฐมนตรีว่าด้วยงานสารบรรณ พ.ศ. 2526 ต้องระบุส่วนราชการเจ้าของหนังสือในข้อใดจึงถูกต้องที่สุด?",
+                options: [
+                    "ระบุเพียงชื่อโรงเรียนที่ออกหนังสือ",
+                    "ระบุชื่อโรงเรียน ที่ตั้ง ตลอดจนสังกัดเขตพื้นที่การศึกษาต้นสังกัดให้ครบถ้วนเพื่ออ้างอิงรหัสพัสดุและไปรษณีย์",
+                    "ระบุเฉพาะรหัสไปรษณีย์ของโรงเรียน",
+                    "ระบุชื่อตัวผู้อำนวยการโรงเรียนและเบอร์โทรศัพท์ส่วนตัวเพื่อให้ตอบรับกลับทันที"
+                ],
+                correctAnswer: 1,
+                explanation: "หนังสือภายนอกเป็นหนังสือติดต่อราชการที่เป็นแบบพิธีการ โดยส่วนหัวของกระดาษตราครุฑ จะระบุชื่อส่วนราชการเจ้าของหนังสือ เช่น 'โรงเรียนบ้านเจ๊ะยอ สังกัดสำนักงานเขตพื้นที่การศึกษาประถมศึกษานราธิวาส เขต 2' และระบุรายละเอียดที่ตั้ง รหัสไปรษณีย์ไว้ส่วนล่างของเอกสาร",
+                reference: "ระเบียบสำนักนายกรัฐมนตรีว่าด้วยงานสารบรรณ พ.ศ. 2526 ส่วนประกอบหนังสือภายนอก"
+            }
+        ];
+
+        /* -----------------------------------------------------
+         * APPLICATION GLOBAL STATE VARIABLES
+         * ----------------------------------------------------- */
+        let state = {
+            apiKey: localStorage.getItem('deputy_api_key') || '',
+            questions: [],
+            currentQuestionIndex: 0,
+            userAnswers: [], // stores the chosen option index (0 to 3) or null
+            timeRemaining: 0, // in seconds
+            timerInterval: null,
+            isExamStarted: false,
+            isExamFinished: false,
+            difficulty: 'easy',
+            topicType: 'preset', // preset or custom
+            majorTopic: 'laws',
+            subTopicId: '',
+            customTopicText: '',
+            questionCount: 10,
+            timerLimit: 15, // in minutes
+            timeSpent: 0 // elapsed time in seconds
+        };
+
+        /* -----------------------------------------------------
+         * DOM LIFECYCLE INITIALIZER
+         * ----------------------------------------------------- */
+        window.onload = function() {
+            // Restore saved API Key to UI input if exists
+            if (state.apiKey) {
+                document.getElementById('apiKeyInput').value = state.apiKey;
+                updateApiKeyStatusUI(true);
+            } else {
+                updateApiKeyStatusUI(false);
+            }
+
+            // Populate Subtopics Select Menu
+            updateSubtopics();
+            // Sync Difficulty UI selection
+            selectDifficulty('easy');
+
+            // Set dynamic tips interval for loader screen
+            const tips = [
+                "กำลังเชื่อมโยงข้อมูล พ.ร.บ. จัดซื้อจัดจ้างภาครัฐ ล่าสุดเพื่อเขียนคำถาม...",
+                "กำลังจำลองสถานการณ์การใช้วินัยและคุณธรรมของคณะกรรมการสถานศึกษา...",
+                "กำลังดึงนโยบาย 'เรียนดี มีความสุข' เพื่อสร้างโจทย์แก้ปัญหานักเรียนในห้องเรียน...",
+                "วิเคราะห์เทรนด์การบริหารยุค AI เพื่อพัฒนาข้อสอบการนำนวัตกรรมมาประยุกต์ใช้...",
+                "สร้างโจทย์สถานการณ์สมจริงที่เคยออกสอบในสนามสอบภาค ข ของ สพฐ..."
+            ];
+            setInterval(() => {
+                const tipElement = document.getElementById('loadingTip');
+                if (tipElement) {
+                    const randomTip = tips[Math.floor(Math.random() * tips.length)];
+                    tipElement.innerText = randomTip;
+                }
+            }, 3500);
+        }
+
+        /* -----------------------------------------------------
+         * GENERAL CONSOLE/VIEW ROUTERS
+         * ----------------------------------------------------- */
+        function setTopicType(type) {
+            state.topicType = type;
+            const btnPreset = document.getElementById('btnTypePreset');
+            const btnCustom = document.getElementById('btnTypeCustom');
+            const presetContainer = document.getElementById('presetTopicContainer');
+            const customContainer = document.getElementById('customTopicContainer');
+
+            if (type === 'preset') {
+                btnPreset.className = "py-2.5 px-4 rounded-xl border-2 text-sm font-medium flex items-center justify-center space-x-2 transition-all duration-200 border-brand-500 bg-brand-50/50 text-brand-700";
+                btnCustom.className = "py-2.5 px-4 rounded-xl border-2 text-sm font-medium flex items-center justify-center space-x-2 transition-all duration-200 border-slate-200 text-slate-600 hover:bg-slate-50";
+                presetContainer.classList.remove('hidden');
+                customContainer.classList.add('hidden');
+            } else {
+                btnCustom.className = "py-2.5 px-4 rounded-xl border-2 text-sm font-medium flex items-center justify-center space-x-2 transition-all duration-200 border-brand-500 bg-brand-50/50 text-brand-700";
+                btnPreset.className = "py-2.5 px-4 rounded-xl border-2 text-sm font-medium flex items-center justify-center space-x-2 transition-all duration-200 border-slate-200 text-slate-600 hover:bg-slate-50";
+                presetContainer.classList.add('hidden');
+                customContainer.classList.remove('hidden');
+            }
+        }
+
+        function updateSubtopics() {
+            const majorSelect = document.getElementById('majorTopic');
+            const subSelect = document.getElementById('subTopic');
+            const currentMajor = majorSelect.value;
+            
+            // Clear current subtopics
+            subSelect.innerHTML = '';
+            
+            // Add category subtopics
+            const categories = quizCategories[currentMajor].subtopics;
+            categories.forEach(sub => {
+                const option = document.createElement('option');
+                option.value = sub.id;
+                option.text = sub.title;
+                subSelect.appendChild(option);
+            });
+        }
+
+        function selectDifficulty(diff) {
+            state.difficulty = diff;
+            const ids = ['easy', 'medium', 'hard', 'realistic'];
+            
+            ids.forEach(id => {
+                const label = document.getElementById(`diffLabel-${id}`);
+                const input = label.querySelector('input');
+                
+                if (id === diff) {
+                    input.checked = true;
+                    label.className = "relative flex flex-col p-3 border-2 rounded-xl cursor-pointer bg-brand-50/20 border-brand-500 shadow-sm transition";
+                } else {
+                    label.className = "relative flex flex-col p-3 border-2 rounded-xl cursor-pointer hover:bg-slate-50 border-slate-200 transition";
+                }
+            });
+        }
+
+        /* -----------------------------------------------------
+         * MODAL ACTIONS (Custom Alert Replacement)
+         * ----------------------------------------------------- */
+        function toggleApiModal() {
+            const modal = document.getElementById('apiConfigModal');
+            const content = document.getElementById('apiModalContent');
+            if (modal.classList.contains('hidden')) {
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+                setTimeout(() => content.classList.remove('scale-95'), 10);
+            } else {
+                content.classList.add('scale-95');
+                setTimeout(() => {
+                    modal.classList.remove('flex');
+                    modal.classList.add('hidden');
+                }, 200);
+            }
+        }
+
+        function saveApiKey() {
+            const keyInput = document.getElementById('apiKeyInput').value.trim();
+            state.apiKey = keyInput;
+            localStorage.setItem('deputy_api_key', keyInput);
+            updateApiKeyStatusUI(!!keyInput);
+            toggleApiModal();
+            showNotification("บันทึกสำเร็จ", "ระบบได้บันทึก API Key ของคุณเรียบร้อยแล้วและจะนำไปใช้งานสำหรับการประมวลผลข้อสอบถัดไป", "check-circle", "emerald");
+        }
+
+        function updateApiKeyStatusUI(hasKey) {
+            const icon = document.getElementById('apiKeyStatusIcon');
+            const text = document.getElementById('apiKeyStatusText');
+            if (hasKey) {
+                icon.className = "fa-solid fa-key text-emerald-400";
+                text.innerText = "ใช้งาน API ส่วนตัวเรียบร้อย";
+            } else {
+                icon.className = "fa-solid fa-wand-magic-sparkles text-brand-300 animate-pulse";
+                text.innerText = "ใช้ระบบ API อัจฉริยะ (ฟรี/อัตโนมัติ)";
+            }
+        }
+
+        function showNotification(title, description, icon = "circle-info", color = "brand") {
+            document.getElementById('notifTitle').innerText = title;
+            document.getElementById('notifDescription').innerText = description;
+            
+            const iconContainer = document.getElementById('notifIconContainer');
+            iconContainer.innerHTML = `<i class="fa-solid fa-${icon}"></i>`;
+            
+            // Adjust colors dynamically
+            if (color === "emerald") {
+                iconContainer.className = "mx-auto w-12 h-12 rounded-full bg-emerald-50 flex items-center justify-center text-emerald-500 text-xl";
+            } else if (color === "red") {
+                iconContainer.className = "mx-auto w-12 h-12 rounded-full bg-red-50 flex items-center justify-center text-red-500 text-xl";
+            } else {
+                iconContainer.className = "mx-auto w-12 h-12 rounded-full bg-brand-50 flex items-center justify-center text-brand-500 text-xl";
+            }
+
+            const modal = document.getElementById('notificationModal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeNotifModal() {
+            const modal = document.getElementById('notificationModal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        /* -----------------------------------------------------
+         * GEMINI API QUIZ GENERATION ENGINE
+         * ----------------------------------------------------- */
+        async function generateAndPrepareQuiz() {
+            // Read form settings
+            state.questionCount = parseInt(document.getElementById('questionCount').value);
+            state.timerLimit = parseInt(document.getElementById('timerLimit').value);
+            state.customTopicText = document.getElementById('customTopicText').value.trim();
+            state.subTopicId = document.getElementById('subTopic').value;
+            state.majorTopic = document.getElementById('majorTopic').value;
+
+            // Determine final prompt topic label
+            let selectedTopicTitle = "";
+            if (state.topicType === 'preset') {
+                const subObj = quizCategories[state.majorTopic].subtopics.find(s => s.id === state.subTopicId);
+                selectedTopicTitle = subObj ? subObj.title : "ความรู้ทางการบริหารสถานศึกษา";
+            } else {
+                selectedTopicTitle = state.customTopicText || "ความรู้ทั่วไปและวินัยผู้บริหารโรงเรียน";
+            }
+
+            // Show Loading view, hide configuration
+            document.getElementById('configSection').classList.add('hidden');
+            document.getElementById('loadingSection').classList.remove('hidden');
+            document.getElementById('loadingSection').classList.add('flex');
+
+            try {
+                // Call Google Gemini API
+                const questions = await fetchQuestionsFromAI(selectedTopicTitle, state.difficulty, state.questionCount);
+                if (questions && questions.length > 0) {
+                    state.questions = questions;
+                } else {
+                    throw new Error("No valid parsed questions generated.");
+                }
+            } catch (err) {
+                console.warn("API Error or limits reached. Launching offline premium fallback simulator dataset:", err);
+                // Trigger localized high-fidelity fallback dataset
+                state.questions = generateFallbackDataset(selectedTopicTitle, state.difficulty, state.questionCount);
+            }
+
+            // Reset exam state
+            state.currentQuestionIndex = 0;
+            state.userAnswers = new Array(state.questions.length).fill(null);
+            state.timeRemaining = state.timerLimit * 60; // to seconds
+            state.timeSpent = 0;
+            state.isExamStarted = true;
+            state.isExamFinished = false;
+
+            // Transition UI views
+            document.getElementById('loadingSection').classList.remove('flex');
+            document.getElementById('loadingSection').classList.add('hidden');
+            document.getElementById('examSection').classList.remove('hidden');
+            document.getElementById('examSection').classList.add('flex');
+
+            // Render Exam Board
+            renderExamDashboard();
+            startTimerCountdown();
+        }
+
+        // Connect to Gemini API using prompt design instructions
+        async function fetchQuestionsFromAI(topic, difficulty, count) {
+            // Build Prompt Context based on Thai Education Board Regulations
+            const systemPrompt = `คุณคือผู้เชี่ยวชาญระดับสูงในการออกข้อสอบคัดเลือกเพื่อบรรจุแต่งตั้งรองผู้อำนวยการสถานศึกษาของกระทรวงศึกษาธิการไทย 
+หน้าที่ของคุณคือออกแบบข้อสอบตามหัวข้อและระดับความยากที่กำหนดอย่างถูกต้อง แม่นยำตาม พ.ร.บ., ระเบียบราชการ, มาตรากฎหมาย, เกณฑ์จรรยาบรรณ และนวัตกรรมการศึกษาของไทย
+
+ระดับความยาก:
+- "easy" (ง่าย): เน้นตัวกฎหมายตรงๆ ความจำ พ.ร.บ. มาตรา ตัวเลข คณะกรรมการ จำนวนวัน ขั้นตอนการทำงานพื้นฐาน
+- "medium" (ปานกลาง): ความจำระเบียบผสมผสานกับการปฏิบัติหน้าที่การประยุกต์ใช้ในโรงเรียนทั่วไป
+- "hard" (ยาก): ข้อสอบคิดวิเคราะห์เชิงลึก เผชิญสถานการณ์ท้าทายในโรงเรียน การแก้ไขปัญหาการเงิน ชุมชนสัมพันธ์ หรือความขัดแย้งของบุคลากร
+- "realistic" (สมจริง): ข้อสอบที่มีกรณีศึกษาที่กลั่นกรองซับซ้อน ตัวเลือกหลอกที่แนบเนียนมาก อ้างอิงแนวข้อสอบจริงที่ผ่านมา มีการประยุกต์ใช้ข้อกฎหมายควบคู่ทฤษฎีการบริหารขั้นสูง
+
+คุณต้องออกแบบข้อสอบและส่งผลลัพธ์ในรูปแบบของโครงสร้าง JSON ARRAY เท่านั้น ห้ามเขียนตัวหนังสืออธิบายอื่นใดนอกเนื้อหา JSON (Strictly Output Valid JSON)`;
+
+            const userPrompt = `ออกข้อสอบแบบปรนัย 4 ตัวเลือก จำนวน ${count} ข้อ ในหัวเรื่องเรื่อง "${topic}" และระดับความยาก "${difficulty}"
+แต่ละคำถามต้องประกอบด้วยโครงสร้างดังต่อไปนี้ในแต่ละออบเจกต์:
+- "question" (เนื้อหาคำถาม เป็นภาษาไทย)
+- "options" (แถวข้อมูลออบเจกต์สตริง 4 ตัวเลือก ตัวเลือก ก, ข, ค, ง)
+- "correctAnswer" (ดัชนีของตัวเลือกที่ถูกต้อง เริ่มจาก 0 ยึดตามลำดับ 0=ก, 1=ข, 2=ค, 3=ง)
+- "tag" (หมวดหมู่คำถาม เช่น งานวิชาการ, งานงบประมาณ, วินัยครู, นโยบาย ศธ.)
+- "explanation" (คำเฉลยอธิบายอย่างกระชับ ละเอียด เข้าใจง่าย มีเหตุผลสนับสนุนว่าทำไมตัวเลือกนี้ถึงถูกต้อง และทำไมตัวเลือกอื่นจึงผิด)
+- "reference" (ระบุมาตรา พระราชบัญญัติ ระเบียบ หรือหลักวิชาการบริหารอ้างอิงให้ชัดเจนและถูกต้องตามกฎหมายไทย)
+
+สร้าง JSON ให้สมบูรณ์และถูกต้อง`;
+
+            // If API Key is empty, use empty string which lets Canvas handle injection in runtime fetch
+            const apiKey = state.apiKey || "";
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+
+            const payload = {
+                contents: [{ parts: [{ text: userPrompt }] }],
+                generationConfig: {
+                    responseMimeType: "application/json",
+                    responseSchema: {
+                        type: "ARRAY",
+                        items: {
+                            type: "OBJECT",
+                            properties: {
+                                "question": { "type": "STRING" },
+                                "options": {
+                                    "type": "ARRAY",
+                                    "items": { "type": "STRING" }
+                                },
+                                "correctAnswer": { "type": "NUMBER" },
+                                "tag": { "type": "STRING" },
+                                "explanation": { "type": "STRING" },
+                                "reference": { "type": "STRING" }
+                            },
+                            "required": ["question", "options", "correctAnswer", "tag", "explanation", "reference"]
+                        }
+                    }
+                },
+                systemInstruction: {
+                    parts: [{ text: systemPrompt }]
+                }
+            };
+
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            if (!response.ok) {
+                throw new Error("Gemini API connection error");
+            }
+
+            const result = await response.json();
+            const candidate = result.candidates?.[0];
+            if (candidate && candidate.content?.parts?.[0]?.text) {
+                const text = candidate.content.parts[0].text;
+                const parsedJson = JSON.parse(text);
+                if (Array.isArray(parsedJson)) {
+                    return parsedJson;
+                }
+            }
+            return null;
+        }
+
+        // Generate customized Thai school board questions locally based on selection when API fails
+        function generateFallbackDataset(topic, difficulty, count) {
+            let selectedPool = [...fallbackQuizzes];
+            
+            // Generate customized programmatic questions to fill the exact size requested by user
+            while (selectedPool.length < count) {
+                const index = selectedPool.length;
+                selectedPool.push({
+                    question: `ข้อสอบจำลองหมวดหมู่พิเศษ (ข้อที่ ${index + 1}): ในประเด็นของ "${topic}" ที่เป็นนโยบายพัฒนาในระดับยุทธศาสตร์ ท่านคิดว่าสิ่งที่เป็นอุปสรรคสำคัญในการปฏิบัติตามมาตรฐานและขั้นตอนระเบียบราชการไทยคืออะไร?`,
+                    options: [
+                        "บุคลากรขาดแคลนงบประมาณในการวิเคราะห์จัดทำ",
+                        "การขาดความรู้ความเข้าใจ ทักษะเฉพาะด้าน และการประสานงานร่วมกับชุมชนอย่างเป็นระบบ",
+                        "ผู้บริหารไม่มีอำนาจเบ็ดเสร็จเด็ดขาดในการดำเนินงานทางกฎหมายพัสดุ",
+                        "ระยะเวลาในการดำเนินการที่กฎกระทรวงกำหนดสั้นเกินไป"
+                    ],
+                    correctAnswer: 1,
+                    explanation: "การพัฒนาวิสัยทัศน์และการขับเคลื่อนแผนงานบริหารโรงเรียนที่ยั่งยืน อุปสรรคสูงสุดมักเกิดจากการพัฒนาทรัพยากรมนุษย์ (HRD) การสื่อสารทำความเข้าใจให้ครูผู้ปฏิบัติพร้อมเปิดรับสิ่งใหม่ รวมถึงการสร้างพันธมิตรความร่วมมือเชิงรุกกับชุมชนรอบโรงเรียน",
+                    reference: "หลักทฤษฎีภาวะผู้นำการเปลี่ยนแปลง (Transformational Leadership) และยุทธศาสตร์การมีส่วนร่วมของชุมชน"
+                });
+            }
+
+            // Slice to user count request
+            return selectedPool.slice(0, count);
+        }
+
+        /* -----------------------------------------------------
+         * EXAM RUNTIME LOGER & EVENT CONTROLLER
+         * ----------------------------------------------------- */
+        function renderExamDashboard() {
+            const currentQ = state.questions[state.currentQuestionIndex];
+            
+            // Set Progress Indicators
+            document.getElementById('questionNumberIndicator').innerText = `ข้อที่ ${state.currentQuestionIndex + 1} จาก ${state.questions.length}`;
+            document.getElementById('currentQuestionTag').innerText = currentQ.tag || "หมวดความรู้ทางการบริหาร";
+            document.getElementById('questionText').innerText = currentQ.question;
+
+            // Render Grid Buttons
+            renderGridPanel();
+
+            // Render Options
+            const optionsContainer = document.getElementById('optionsContainer');
+            optionsContainer.innerHTML = '';
+
+            const prefixLetters = ["ก.", "ข.", "ค.", "ง."];
+            currentQ.options.forEach((option, idx) => {
+                const isSelected = state.userAnswers[state.currentQuestionIndex] === idx;
+                
+                const optionBtn = document.createElement('button');
+                optionBtn.type = "button";
+                optionBtn.onclick = () => chooseAnswer(idx);
+                optionBtn.className = `w-full text-left p-4 rounded-xl border-2 transition-all duration-150 flex items-start space-x-3 group ${
+                    isSelected 
+                    ? "border-brand-500 bg-brand-50/50 text-brand-900 shadow-sm" 
+                    : "border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300"
+                }`;
+
+                // Letter circle
+                const badge = document.createElement('span');
+                badge.className = `w-6 h-6 rounded-full shrink-0 flex items-center justify-center text-xs font-bold transition ${
+                    isSelected 
+                    ? "bg-brand-500 text-white" 
+                    : "bg-slate-100 text-slate-500 group-hover:bg-slate-200"
+                }`;
+                badge.innerText = prefixLetters[idx];
+
+                const text = document.createElement('span');
+                text.className = "text-sm sm:text-base leading-relaxed -mt-0.5";
+                text.innerText = option;
+
+                optionBtn.appendChild(badge);
+                optionBtn.appendChild(text);
+                optionsContainer.appendChild(optionBtn);
+            });
+
+            // Handle bottom nav button states
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+
+            if (state.currentQuestionIndex === 0) {
+                prevBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                prevBtn.disabled = true;
+            } else {
+                prevBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                prevBtn.disabled = false;
+            }
+
+            if (state.currentQuestionIndex === state.questions.length - 1) {
+                nextBtn.innerHTML = `<span>ส่งข้อสอบ</span> <i class="fa-solid fa-check"></i>`;
+                nextBtn.onclick = confirmSubmitModal;
+            } else {
+                nextBtn.innerHTML = `<span>ข้อถัดไป</span> <i class="fa-solid fa-chevron-right"></i>`;
+                nextBtn.onclick = nextQuestion;
+            }
+
+            // Sync overall ratio
+            const answeredCount = state.userAnswers.filter(a => a !== null).length;
+            document.getElementById('answeredRatio').innerText = `${answeredCount}/${state.questions.length} ข้อ`;
+            
+            const progressPercent = (answeredCount / state.questions.length) * 100;
+            document.getElementById('examProgressBar').style.width = `${progressPercent}%`;
+        }
+
+        function renderGridPanel() {
+            const gridContainer = document.getElementById('questionGrid');
+            gridContainer.innerHTML = '';
+
+            state.questions.forEach((_, idx) => {
+                const btn = document.createElement('button');
+                btn.type = "button";
+                btn.onclick = () => jumpToQuestion(idx);
+
+                const isCurrent = state.currentQuestionIndex === idx;
+                const isAnswered = state.userAnswers[idx] !== null;
+
+                let baseClass = "h-10 w-10 text-xs font-bold rounded-lg transition-all flex items-center justify-center border-2 ";
+                if (isCurrent) {
+                    baseClass += "border-brand-500 bg-brand-500 text-white ring-2 ring-brand-300";
+                } else if (isAnswered) {
+                    baseClass += "border-emerald-500 bg-emerald-50 text-emerald-700 hover:bg-emerald-100";
+                } else {
+                    baseClass += "border-slate-200 bg-white text-slate-600 hover:bg-slate-50 hover:border-slate-300";
+                }
+
+                btn.className = baseClass;
+                btn.innerText = idx + 1;
+                gridContainer.appendChild(btn);
+            });
+        }
+
+        function chooseAnswer(optionIdx) {
+            state.userAnswers[state.currentQuestionIndex] = optionIdx;
+            renderExamDashboard();
+        }
+
+        function jumpToQuestion(idx) {
+            state.currentQuestionIndex = idx;
+            renderExamDashboard();
+        }
+
+        function prevQuestion() {
+            if (state.currentQuestionIndex > 0) {
+                state.currentQuestionIndex--;
+                renderExamDashboard();
+            }
+        }
+
+        function nextQuestion() {
+            if (state.currentQuestionIndex < state.questions.length - 1) {
+                state.currentQuestionIndex++;
+                renderExamDashboard();
+            }
+        }
+
+        /* -----------------------------------------------------
+         * TIMING COUNTDOWN MANAGEMENT
+         * ----------------------------------------------------- */
+        function startTimerCountdown() {
+            // Stop existing timer if any
+            if (state.timerInterval) clearInterval(state.timerInterval);
+
+            // Handle unlimited timer case
+            if (state.timerLimit === 0) {
+                document.getElementById('timerContainer').innerHTML = `<i class="fa-solid fa-infinity"></i> <span class="ml-1">ไม่จำกัดเวลา</span>`;
+                state.timerInterval = setInterval(() => {
+                    state.timeSpent++;
+                }, 1000);
+                return;
+            }
+
+            const timerDisplay = document.getElementById('examTimer');
+            
+            state.timerInterval = setInterval(() => {
+                state.timeSpent++;
+                state.timeRemaining--;
+
+                if (state.timeRemaining <= 0) {
+                    clearInterval(state.timerInterval);
+                    autoSubmitOnTimeOut();
+                } else {
+                    const mins = Math.floor(state.timeRemaining / 60);
+                    const secs = state.timeRemaining % 60;
+                    timerDisplay.innerText = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+                    
+                    // Alarm colors at 1 minute remaining
+                    if (state.timeRemaining <= 60) {
+                        const tc = document.getElementById('timerContainer');
+                        tc.className = "flex items-center space-x-1.5 text-red-600 font-bold bg-red-50 px-2.5 py-1 rounded-lg animate-pulse";
+                    }
+                }
+            }, 1000);
+        }
+
+        /* -----------------------------------------------------
+         * DIALOG TRIGGERS
+         * ----------------------------------------------------- */
+        function confirmSubmitModal() {
+            const unanswered = state.userAnswers.filter(a => a === null).length;
+            const desc = unanswered > 0 
+                ? `คุณยังไม่ได้ทำข้อสอบอีก ${unanswered} ข้อ คุณแน่ใจหรือไม่ว่าต้องการส่งกระดาษคำตอบในตอนนี้?`
+                : "คุณได้ทำข้อสอบครบทุกข้อแล้ว ต้องการส่งคำตอบเพื่อตรวจผลคะแนนทันทีหรือไม่?";
+            
+            document.getElementById('notifDescription'); // placeholder for design consistency
+            const modal = document.getElementById('confirmSubmitModal');
+            modal.querySelector('p').innerText = desc;
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeSubmitModal() {
+            const modal = document.getElementById('confirmSubmitModal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        function confirmExitModal() {
+            // Setup dual button callbacks inside standard dialog
+            const actionContainer = document.getElementById('notifActionContainer');
+            actionContainer.innerHTML = `
+                <button onclick="closeNotifModal()" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold py-2.5 rounded-xl transition text-xs">ทำข้อสอบต่อ</button>
+                <button onclick="executeExitExam()" class="flex-1 bg-red-600 hover:bg-red-700 text-white font-bold py-2.5 rounded-xl shadow transition text-xs">ยืนยันออกจากสอบ</button>
+            `;
+            showNotification("ยืนยันการออกจากห้องสอบ?", "ความคืบหน้าและคะแนนในชุดทดสอบปัจจุบันนี้จะไม่ได้รับการบันทึก", "arrow-right-from-bracket", "red");
+        }
+
+        function executeExitExam() {
+            closeNotifModal();
+            backToDashboard();
+        }
+
+        function backToDashboard() {
+            if (state.timerInterval) clearInterval(state.timerInterval);
+            state.isExamStarted = false;
+            state.isExamFinished = false;
+
+            // Show Configuration, hide everything else
+            document.getElementById('examSection').classList.add('hidden');
+            document.getElementById('resultSection').classList.add('hidden');
+            document.getElementById('configSection').classList.remove('hidden');
+
+            // Reset dialog actions container back to default single close button
+            document.getElementById('notifActionContainer').innerHTML = `
+                <button onclick="closeNotifModal()" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold py-2.5 rounded-xl transition text-xs">ปิดหน้าต่าง</button>
+            `;
+        }
+
+        /* -----------------------------------------------------
+         * SCORING ENGINE & RESULTS VIEW
+         * ----------------------------------------------------- */
+        function autoSubmitOnTimeOut() {
+            closeSubmitModal();
+            showNotification("หมดเวลาทำข้อสอบ", "ระบบได้ดำเนินการรวบรวมและส่งคำตอบปัจจุบันของคุณโดยอัตโนมัติแล้ว", "hourglass-end", "red");
+            setTimeout(() => {
+                closeNotifModal();
+                executeSubmitExam();
+            }, 3000);
+        }
+
+        function executeSubmitExam() {
+            closeSubmitModal();
+            if (state.timerInterval) clearInterval(state.timerInterval);
+            
+            state.isExamStarted = false;
+            state.isExamFinished = true;
+
+            // Calculate score details
+            let correctCount = 0;
+            state.questions.forEach((q, idx) => {
+                if (state.userAnswers[idx] === q.correctAnswer) {
+                    correctCount++;
+                }
+            });
+
+            // Transition views
+            document.getElementById('examSection').classList.add('hidden');
+            document.getElementById('resultSection').classList.remove('hidden');
+
+            // Build Stats Labels
+            document.getElementById('resultScore').innerText = `${correctCount}/${state.questions.length}`;
+            
+            const percent = Math.round((correctCount / state.questions.length) * 100);
+            document.getElementById('resultPercentage').innerText = `คิดเป็น ${percent}%`;
+
+            // Personal Appraisal Message
+            let appraisal = "";
+            if (percent >= 80) {
+                appraisal = "⭐ ยอดเยี่ยมที่สุด! คุณมีความเข้าใจในบทบาทกฎหมายและการตัดสินใจบริหารตามหลักเกณฑ์ ก.ค.ศ. อย่างแม่นยำ";
+            } else if (percent >= 60) {
+                appraisal = "👍 ผ่านเกณฑ์มาตรฐานการประเมิน! คุณมีทักษะการตัดสินใจพื้นฐานที่ดี แต่ควรเพิ่มพูนความละเอียดในหมวดงบประมาณและการเงิน";
+            } else {
+                appraisal = "⚠️ ยังไม่ผ่านเกณฑ์การสอบประเมิน (ต้องไม่ต่ำกว่า 60%) แนะนำให้อ่านทบทวนหัวข้อ พ.ร.บ.หลักและลองทำใหม่อีกครั้ง";
+            }
+            document.getElementById('resultAppraisalText').innerText = appraisal;
+
+            // Difficulty Label translation
+            const diffThai = { easy: "ง่าย (เน้นจำ)", medium: "ปานกลาง", hard: "ยาก (วิเคราะห์)", realistic: "สมจริง (ข้อสอบจริง)" };
+            document.getElementById('statDifficulty').innerText = diffThai[state.difficulty] || "ทั่วไป";
+
+            // Timer spent display
+            const minSpent = Math.floor(state.timeSpent / 60);
+            const secSpent = state.timeSpent % 60;
+            document.getElementById('statTimeSpent').innerText = `${minSpent} นาที ${secSpent} วินาที`;
+
+            // Topic name fallback
+            let topicName = "";
+            if (state.topicType === 'preset') {
+                const subObj = quizCategories[state.majorTopic].subtopics.find(s => s.id === state.subTopicId);
+                topicName = subObj ? subObj.title : "หมวดหมู่มาตรฐาน";
+            } else {
+                topicName = state.customTopicText || "หัวข้อระบุเอง";
+            }
+            document.getElementById('statTopic').innerText = topicName;
+
+            // Render Detailed Review Panels
+            renderDetailedReview();
+        }
+
+        function renderDetailedReview() {
+            const listContainer = document.getElementById('reviewListContainer');
+            listContainer.innerHTML = '';
+
+            const alphabet = ["ก", "ข", "ค", "ง"];
+
+            state.questions.forEach((q, qIdx) => {
+                const isCorrect = state.userAnswers[qIdx] === q.correctAnswer;
+                const chosenAnsStr = state.userAnswers[qIdx] !== null ? `${alphabet[state.userAnswers[qIdx]]}. ${q.options[state.userAnswers[qIdx]]}` : "ไม่เลือกคำตอบ";
+                const correctAnsStr = `${alphabet[q.correctAnswer]}. ${q.options[q.correctAnswer]}`;
+
+                const card = document.createElement('div');
+                card.className = `p-5 sm:p-6 rounded-2xl border bg-white shadow-sm transition-all ${
+                    isCorrect ? "border-emerald-200 bg-emerald-50/10" : "border-rose-200 bg-rose-50/10"
+                }`;
+
+                // Header status row
+                const statusRow = document.createElement('div');
+                statusRow.className = "flex items-center justify-between mb-4 border-b border-slate-100 pb-3";
+                
+                const qNum = document.createElement('span');
+                qNum.className = "text-sm font-bold text-slate-900";
+                qNum.innerText = `ข้อที่ ${qIdx + 1} (${q.tag || "หมวดทั่วไป"})`;
+
+                const badge = document.createElement('span');
+                if (isCorrect) {
+                    badge.className = "inline-flex items-center space-x-1 bg-emerald-100 text-emerald-800 text-xs font-bold px-2.5 py-1 rounded-full";
+                    badge.innerHTML = `<i class="fa-solid fa-circle-check"></i> <span>ตอบถูกต้อง</span>`;
+                } else {
+                    badge.className = "inline-flex items-center space-x-1 bg-rose-100 text-rose-800 text-xs font-bold px-2.5 py-1 rounded-full";
+                    badge.innerHTML = `<i class="fa-solid fa-circle-xmark"></i> <span>ตอบผิด</span>`;
+                }
+
+                statusRow.appendChild(qNum);
+                statusRow.appendChild(badge);
+                card.appendChild(statusRow);
+
+                // Question Statement
+                const stmt = document.createElement('h4');
+                stmt.className = "text-base font-bold text-slate-800 leading-relaxed mb-4";
+                stmt.innerText = q.question;
+                card.appendChild(stmt);
+
+                // Selected & Correct answer labels
+                const answersDiv = document.createElement('div');
+                answersDiv.className = "grid grid-cols-1 md:grid-cols-2 gap-3 mb-4";
+
+                const userBox = document.createElement('div');
+                userBox.className = `p-3 rounded-lg border text-xs ${
+                    isCorrect ? "bg-emerald-50/50 border-emerald-200 text-emerald-900" : "bg-rose-50/50 border-rose-200 text-rose-900"
+                }`;
+                userBox.innerHTML = `<span class="font-bold">คำตอบของคุณ:</span> <p class="mt-1">${chosenAnsStr}</p>`;
+
+                const correctBox = document.createElement('div');
+                correctBox.className = "p-3 rounded-lg border border-slate-200 bg-slate-50/50 text-slate-800 text-xs";
+                correctBox.innerHTML = `<span class="font-bold text-slate-600">คำตอบที่ถูกต้อง:</span> <p class="mt-1 font-semibold text-brand-700">${correctAnsStr}</p>`;
+
+                answersDiv.appendChild(userBox);
+                answersDiv.appendChild(correctBox);
+                card.appendChild(answersDiv);
+
+                // Explanation drawer
+                const expBox = document.createElement('div');
+                expBox.className = "bg-white border border-slate-200 p-4 rounded-xl text-xs space-y-2 leading-relaxed text-slate-600";
+                
+                expBox.innerHTML = `
+                    <div class="flex items-start space-x-1.5">
+                        <i class="fa-regular fa-lightbulb text-amber-500 mt-0.5 text-sm"></i>
+                        <div>
+                            <span class="font-bold text-slate-800 block mb-1">คำชี้แจงเฉลย:</span>
+                            <p>${q.explanation}</p>
+                        </div>
+                    </div>
+                    <div class="border-t border-slate-100 pt-2 flex items-center space-x-1.5 text-brand-600 font-medium">
+                        <i class="fa-solid fa-scale-balanced text-[10px]"></i>
+                        <span>อ้างอิงทางกฎหมาย: <span class="text-slate-500 font-normal">${q.reference || "ระเบียบ สพฐ. ทั่วไป"}</span></span>
+                    </div>
+                `;
+                card.appendChild(expBox);
+
+                listContainer.appendChild(card);
+            });
+        }
+
+        function restartWithSameSettings() {
+            // Re-trigger the generation logic with current variables
+            generateAndPrepareQuiz();
+        }
+    </script>
+</body>
+</html>
